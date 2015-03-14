@@ -1,9 +1,9 @@
 /*Utilities*/
-/** each (collection, callback, nohash)
- ** collection can be single element (only if nohash is set to true), array, any list, or a hashmap (only if nohash is not set)
+/** each (collection, callback, allowsingle)
+ ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
  ** return undefined
  **/
-each = function (cl, fn, nohash) {
+each = function (cl, fn, allowsingle) {
   if (cl.length) {
     for (var i = 0; i < cl.length; i++) {
       (function (_el,_i) {
@@ -11,7 +11,7 @@ each = function (cl, fn, nohash) {
        })(cl[i], i);
     }
   }
-  else if (!nohash){
+  else if (!allowsingle){
     for (var k in cl) {
       (function(_k, _v) {
        fn(_k, _v);
@@ -23,11 +23,11 @@ each = function (cl, fn, nohash) {
   }
 };
 
-/** map (collection, callback, nohash)
- ** collection can be single element (only if nohash is set to true), array, any list, or a hashmap (only if nohash is not set)
+/** map (collection, callback, allowsingle)
+ ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
  ** return single element if collection is single element, array if collection is not single element
  **/
-map = function (cl, fn, nohash) {
+map = function (cl, fn, allowsingle) {
   var result = [];
   if (cl.length) {
     for (var i = 0; i < cl.length; i++) {
@@ -36,7 +36,7 @@ map = function (cl, fn, nohash) {
        })(cl[i], i, result);
     }
   }
-  else if (!nohash) {
+  else if (!allowsingle) {
     for (var k in cl) {
       (function(_k, _v, _result) {
        _result.push(fn(_k, _v));
@@ -64,21 +64,25 @@ chain = function() {
 
 /* DOM Handling */
 /** $ is the namespace for all DOM operation functions
- ** itself is also a function which is alias to $.all
+ ** itself is also a function using CSS Selector to query elements
+ ** return nodelist
  **/
-$ = function() {
-  return $.all.apply(window, arguments);
+$ = function(sel) {
+  return document.querySelectorAll(sel);
 };
 
 /** Generate Function Stubs in namespace
- ** all - Get all matching elements (CSS Selector applies) (IE8+)
+ ** all - Get all matching elements which are descents of the first argument(CSS Selector applies) (IE8+)
  ** function (element = document, selectorString) return a nodelist;
  **
- ** one - Get first matching element (of all) (IE8+)
- ** function (element = document, selectorString) return a node;
+ ** one - Get first matching element (like all but only get first one; fast) (IE8+)
+ ** function (element = document, selectorString) 
+ ** return a node;
  **
  ** id - Get element by ID
- ** function (element = document, idWithoutPrefix#) return a node;
+ ** function (element = document, idWithoutPrefix#) i
+ ** This utilizes getElementById function which is the fastest query function available
+ ** return a node;
  **/
 (function(ns) {
   var queryFunctionMapping = {
@@ -101,6 +105,21 @@ $ = function() {
     (!fn) ?  ns.on (document, en, el): each(el, function(em) {ns.on (em, en, fn);}, true);
   };
 
+  /** create ([parentElement,] elementType);
+   ** Create a DOM element and append to element
+   ** if element is not provided, it just creates an unattached element
+   ** return the new created element
+   **/ 
+  ns.create = function (parentElement, elementType) {
+    if (elementType) {
+      var element = document.createElement(elementType);
+      parentElement.appendChild(element);
+      return element;
+    }
+    else {
+      return document.createElement(parentElement);
+    }
+  }
 
   var setFunctionMapping = {
     'attr': function(el,k,v) { return v ? el.setAttribute(k,v) : el.getAttribute(k);},
@@ -162,14 +181,14 @@ $ = function() {
     });
 
     req.onreadystatechange = function () {
-      if(req.readystate == 3) {
+      if(req.readystate == 3 && fnProg) {
         fnProg(req.response);
       }
       else (req.readystate == 4) {
         if (req.status == 200 || req.status == 304) {
           fnSuc(req.response, req.status);
         }
-        else {
+        else if(fnErr) {
           fnErr(req.response, req.status);
         }
       }
@@ -180,5 +199,4 @@ $ = function() {
     
 
 })($);
-
 
