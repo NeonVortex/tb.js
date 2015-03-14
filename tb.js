@@ -147,6 +147,38 @@ $ = function(sel) {
     }
   }
 
+  /** Append, Prepend, Insert elements into a parent element
+   ** insert (parentElements, childElements, [fnInsertBeforeElement], [isPrepending]
+   ** if parentElements is plural, it will do deep clone on the child elements
+   ** child element can be HTML tag string
+   ** insertMode : how to insert the child elements
+   **   false / undefined - append (default)
+   **   true - prepend
+   **   function (parent, child) that returns another element - customize function that
+   **     shows how the child should be inserted
+   **/
+  ns.insert = function (parentElements, childElements, insertMode) {
+    var fn = (!insertMode ? function (parentElement, childElement) {
+        parentElement.appendChild(childElement);
+      } : (typeof(insertMode) == "boolean" ? 
+          function (parentElement, childElement) {
+            /* Reversed order of children? */
+            parentElement.insertBefore(childElement, parentElement.firstChild);
+          } : (typeof(insertMode) == "function" ?
+            insertMode :
+            return;
+            )
+          )
+      );
+
+    each (parentElements, function (parentElement) {
+      each (childElements, function (childElement) {
+        fn (parentElement, childElement);
+      });
+    });
+  }
+          
+
   /** Send AJAX request to server
    ** ajax(url, data, [usePost], successCallback, [errorCallback, progressCallback])
    ** url: string
