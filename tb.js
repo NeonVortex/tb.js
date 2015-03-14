@@ -4,19 +4,12 @@
  ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
  ** return undefined
  **/
-each = function (cl, fn, allowsingle) {
-  if (cl.length) {
+each = function (cl, fn) {
+  if (Array.isArray(cl) || cl.length) {
     for (var i = 0; i < cl.length; i++) {
       (function (_el,_i) {
        fn(_el, i);
        })(cl[i], i);
-    }
-  }
-  else if (!allowsingle){
-    for (var k in cl) {
-      (function(_k, _v) {
-       fn(_k, _v);
-       })(k, cl[k]);
     }
   }
   else {
@@ -24,24 +17,26 @@ each = function (cl, fn, allowsingle) {
   }
 };
 
+eachPair = function (cl, fn) {
+  for (var k in cl) {
+    (function(_k, _v) {
+     fn(_k, _v);
+     })(k, cl[k]);
+  }
+};
+
+
 /** map (collection, callback, allowsingle)
- ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
+ ** collection can be single element, array, any list
  ** return single element if collection is single element, array if collection is not single element
  **/
-map = function (cl, fn, allowsingle) {
+map = function (cl, fn) {
   var result = [];
-  if (cl.length) {
+  if (Array.isArray(cl) || cl.length) {
     for (var i = 0; i < cl.length; i++) {
       (function (_el,_i, _result) {
        _result.push(fn(_el, i));
        })(cl[i], i, result);
-    }
-  }
-  else if (!allowsingle) {
-    for (var k in cl) {
-      (function(_k, _v, _result) {
-       _result.push(fn(_k, _v));
-       })(k, cl[k], result);
     }
   }
   else {
@@ -50,18 +45,23 @@ map = function (cl, fn, allowsingle) {
   return result;
 };
 
-
-/** chain (target, function, ...)
- ** chain operations on the target
+/** reduce
+ ** only work with single element and array; not hashmap
  **/
-chain = function() {
-  for(var i = 1; i < arguments.length; i++) {
-    (function(obj, fn) {
-      fn(obj);
-    })(arguments[0], arguments[i]);
+reduce = function (cl, fn) {
+  if (Array.isArray(cl) || cl.length) {
+    var cur = cl[0];
+    for(var i = 1; i < cl.length; i++) {
+      (function(x,y) {
+        cur = fn(x,y);
+      }(cur, cl[i]);
+    }
+    return cur;
   }
-};
-
+  else {
+    return cl;
+  }
+}
 
 /* DOM Handling */
 /** $ is the namespace for all DOM operation functions
@@ -88,7 +88,7 @@ $ = function(sel) {
  **/
 (function(ns) {
 
-  each({
+  eachPair({
     'all':'querySelectorAll',
     'one':'querySelector',
     'id':'getElementById',
@@ -98,13 +98,13 @@ $ = function(sel) {
     };
   });
 
-  each({
+  eachPair({
     'attr': function(element, key, value) { return value ? element.setAttribute(key, value) : element.getAttribute(key);},
     'css' : function(element, key, value) { return value ? element.style[key] = value : element.style[key];},
     'prop': function(element, key, value) { return value ? element[key] = value : element[key];}
   }, function(fnName, fn) {
     ns[fnName] = function (elements, key, value) {
-      return map (elements, function (element) { return fn(element, key, value); }, true);
+      return map (elements, function (element) { return fn(element, key, value); });
     };
   });
 
@@ -114,8 +114,8 @@ $ = function(sel) {
    **/
   ns.on = function(elements, eventName, fn, captureBubbling) {
     (document.addEventListener) ? 
-      each(elements, function (element) { element.addEventListener(eventName, fn, captureBubbling); }, true) :
-      each(elements, function (element) { element.attachEvent("on" + eventName, fn); }, true);
+      each(elements, function (element) { element.addEventListener(eventName, fn, captureBubbling); }) :
+      each(elements, function (element) { element.attachEvent("on" + eventName, fn); });
   };
 
   /** ready (element=document, callback)
@@ -143,13 +143,25 @@ $ = function(sel) {
         fn && fn(element, parentElement;
         parentElement.appendChild(element);
         return element;
-      }, true)
+      });
+    }
+  }
+
+  /* Parse HTML or JSON */
+  ns.parse = function (str, isJSON) {
+    if(!isJSON) {
+      var e = document.implementation.createHTMLDocument();
+      e.body.innerHTML = str;
+      return e.body.children;
+    }
+    else {
+      return JSON.parse(str);
     }
   }
 
   /** Append, Prepend, Insert elements into a parent element
    ** insert (parentElements, childElements, [fnInsertBeforeElement], [isPrepending]
-   ** if parentElements is plural, it will do deep clone on the child elements
+   ** it will do deep clone on the child elements
    ** child element can be HTML tag string
    ** insertMode : how to insert the child elements
    **   false / undefined - append (default)
@@ -171,9 +183,14 @@ $ = function(sel) {
           )
       );
 
+    var parsedElements = childElements;
+    if (typeof(childElements) == "string" || (childElements.length && typeof(childElements[0]) == "string) {
+      parsedElements = map (childElements, ns.parse);
+    }
+
     each (parentElements, function (parentElement) {
       each (childElements, function (childElement) {
-        fn (parentElement, childElement);
+        fn (parentElement, childElement.cloneNode(true));
       });
     });
   }
@@ -207,7 +224,7 @@ $ = function(sel) {
       delete data.text;
       prop = data;
     }
-    each (prop, function (k,v) {
+    eachPair (prop, function (k,v) {
       if (k != "mimetype") {
         req.setRequestHeader(k,v);
       }
