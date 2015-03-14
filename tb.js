@@ -1,4 +1,5 @@
-/*Utilities*/
+/* Utilities */
+
 /** each (collection, callback, allowsingle)
  ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
  ** return undefined
@@ -56,8 +57,8 @@ map = function (cl, fn, allowsingle) {
 chain = function() {
   for(var i = 1; i < arguments.length; i++) {
     (function(obj, fn) {
-     fn(obj);
-     })(arguments[0], arguments[i]);
+      fn(obj);
+    })(arguments[0], arguments[i]);
   }
 };
 
@@ -91,57 +92,62 @@ $ = function(sel) {
     'id':'getElementById',
   };
  
-  each(queryFunctionMapping, function(n, fnn) {
-    ns[n] = function (el, s) {
-      return (!s) ? document[fnn](el) : el[fnn](s);
+  each(queryFunctionMapping, function(fnName, mfnName) {
+    ns[fnName] = function (element, arg) {
+      return (!arg) ? document[mfnName](element) : element[mfnName](arg);
     };
   });
+
+  var setFunctionMapping = {
+    'attr': function(element, key, value) { return value ? element.setAttribute(key, value) : element.getAttribute(key);},
+    'css' : function(element, key, value) { return value ? element.style[key] = value : element.style[key];},
+    'prop': function(element, key, value) { return value ? element[key] = value : element[key];}
+  };
  
-  /** When DOM element is ready (IE9+)
-   ** ready(element=document, callback)
+  each(setFunctionMapping, function(fnName, fn) {
+    ns[fnName] = function (elements, key, value) {
+      return map (elements, function (element) { return fn(element, key, value); }, true);
+    };
+  });
+
+  /** on(element, eventName, callback, isCaptureBubbling)
+   ** Attach event
+   ** isCaptureBubbling not working in IE
    **/
-  ns.ready = function (el, fn) {
-    var en = "DOMContentLoaded";
-    (!fn) ?  ns.on (document, en, el): each(el, function(em) {ns.on (em, en, fn);}, true);
+  ns.on = function(elements, eventName, fn, captureBubbling) {
+    (document.addEventListener) ? 
+      each(elements, function (element) { element.addEventListener(eventName, fn, captureBubbling); }, true) :
+      each(elements, function (element) { element.attachEvent("on" + eventName, fn); }, true);
   };
 
-  /** create ([parentElement,] elementType);
-   ** Create a DOM element and append to element
+   /** create ([parentElement,] elementType);
+   ** Create a DOM element and append to parent element
    ** if element is not provided, it just creates an unattached element
+   ** fn is function(element) before appending
    ** return the new created element
    **/ 
-  ns.create = function (parentElement, elementType) {
-    if (elementType) {
-      var element = document.createElement(elementType);
-      parentElement.appendChild(element);
-      return element;
+  ns.create = function (parentElements, elementType, fn) {
+    if (!elementType) {
+      return document.createElement(parentElement);
     }
     else {
-      return document.createElement(parentElement);
+      return map (parentElements, function (parentElement) {
+        var element = document.createElement(elementType);
+        if (fn) { fn(element); }
+        parentElement.appendChild(element);
+        return element;
+      }, true)
     }
   }
 
-  var setFunctionMapping = {
-    'attr': function(el,k,v) { return v ? el.setAttribute(k,v) : el.getAttribute(k);},
-    'css' : function(el,k,v) { return v ? el.style[k] = v : el.style[k];},
-    'prop': function(el,k,v) { return v ? el[k] = v : el[k];}
-  };
- 
-  each(setFunctionMapping, function(n, fn) {
-    ns[n] = function (el, k, v) {
-      return map (el, function (em) { return fn(em,k); }, true);
-    };
-  });
-
-  /** Attach event
-   ** on(element, eventName, callback, isCaptureBubbling)
-   ** isCaptureBubbling not working in IE
+  /** ready (element=document, callback)
+   ** When DOM element is ready (IE9+)
    **/
-  ns.on = function(el, en, fn, cap) {
-    (document.addEventListener) ? 
-      each(el, function (em) { em.addEventListener(en, fn, cap); }, true) :
-      each(el, function (em) { em.attachEvent("on"+en, fn); }, true);
+  ns.ready = function (elements, fn) {
+    var eventName = "DOMContentLoaded";
+    (!fn) ?  ns.on (document, eventName, elements): ns.on (elements, eventName, fn);
   };
+
 
   /** Send AJAX request to server
    ** ajax(url, data, [usePost], successCallback, [errorCallback, progressCallback])
