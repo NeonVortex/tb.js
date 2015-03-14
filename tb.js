@@ -72,7 +72,8 @@ $ = function(sel) {
   return document.querySelectorAll(sel);
 };
 
-/** Generate Function Stubs in namespace
+/** Generate Stub-ed Functions in namespace
+ **
  ** all - Get all matching elements which are descents of the first argument(CSS Selector applies) (IE8+)
  ** function (element = document, selectorString) return a nodelist;
  **
@@ -86,25 +87,22 @@ $ = function(sel) {
  ** return a node;
  **/
 (function(ns) {
-  var queryFunctionMapping = {
+
+  each({
     'all':'querySelectorAll',
     'one':'querySelector',
     'id':'getElementById',
-  };
- 
-  each(queryFunctionMapping, function(fnName, mfnName) {
+  }, function(fnName, mfnName) {
     ns[fnName] = function (element, arg) {
       return (!arg) ? document[mfnName](element) : element[mfnName](arg);
     };
   });
 
-  var setFunctionMapping = {
+  each({
     'attr': function(element, key, value) { return value ? element.setAttribute(key, value) : element.getAttribute(key);},
     'css' : function(element, key, value) { return value ? element.style[key] = value : element.style[key];},
     'prop': function(element, key, value) { return value ? element[key] = value : element[key];}
-  };
- 
-  each(setFunctionMapping, function(fnName, fn) {
+  }, function(fnName, fn) {
     ns[fnName] = function (elements, key, value) {
       return map (elements, function (element) { return fn(element, key, value); }, true);
     };
@@ -119,6 +117,15 @@ $ = function(sel) {
       each(elements, function (element) { element.addEventListener(eventName, fn, captureBubbling); }, true) :
       each(elements, function (element) { element.attachEvent("on" + eventName, fn); }, true);
   };
+
+  /** ready (element=document, callback)
+   ** When DOM element is ready (IE9+)
+   **/
+  ns.ready = function (elements, fn) {
+    var eventName = "DOMContentLoaded";
+    (!fn) ?  ns.on (document, eventName, elements): ns.on (elements, eventName, fn);
+  };
+
 
    /** create ([parentElement,] elementType);
    ** Create a DOM element and append to parent element
@@ -139,15 +146,6 @@ $ = function(sel) {
       }, true)
     }
   }
-
-  /** ready (element=document, callback)
-   ** When DOM element is ready (IE9+)
-   **/
-  ns.ready = function (elements, fn) {
-    var eventName = "DOMContentLoaded";
-    (!fn) ?  ns.on (document, eventName, elements): ns.on (elements, eventName, fn);
-  };
-
 
   /** Send AJAX request to server
    ** ajax(url, data, [usePost], successCallback, [errorCallback, progressCallback])
