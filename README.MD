@@ -17,32 +17,19 @@ Features:
 
   $.css($('#body-container), 'color', 'black');
 
-  This will get escalated really fast when you have chaining in jQuery:
-
-  $('.div-container').css('color','red').addClass('body-container').text("a container")...;
-
-  Using tbjs, you can use something similar to nodejs:
-
-  chain($('.div-container'), 
-    function(e) { $.css(e,'color','red')}, 
-    function(e) { $.attr(e, 'class', $.attr(e, 'class') + ',body-container') },
-    function(e) { $.prop(e, 'innerHTML', 'a container') });
-
-  If each operation in the chain is very short, you might as well just assign the result to a variable than using the chain function.
-
 
 
 Utilities
 all utility functions resides in global namespace as they are very commonly used and should considered built-in
 
 each - Apply callback on each element in the collection.
-  function (collection, callback, allowsingle)
+  function (collection, callback, [allowsingle])
   collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
   return undefined
 
 
 map - Map collection by callback function
-  function (collection, callback, allowsingle)
+  function (collection, callback, [allowsingle])
   collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
   return single element if collection is single element, array if collection is not single element
 
@@ -52,23 +39,25 @@ chain - Chain operations on the target
 
 
 DOM Handling
-$ is the namespace for all DOM operation functions; itself is also a function which is alias to $.all
+
+$ is the namespace for all DOM operation functions 
+$ itself is a function too. $(sel) is equivalent to $.all(document, sel);
 
 
 $.all - Get all matching elements (CSS Selector applies) (IE8+)
-  function (element = document, selectorString) 
+  function ([element = document], selectorString) 
   return a nodelist;
  
 $.one - Get first matching element (of all) (IE8+)
-  function (element = document, selectorString) 
+  function ([element = document], selectorString) 
   return a node;
 
 $.id - Get element by ID
-  function (element = document, idWithoutPrefix#) 
+  function ([element = document], idWithoutPrefix#) 
   return a node;
  
 $.ready - Callback when DOM element(s) is/are ready (IE9+)
-  function(elements = document, callback)
+  function([elements = document], callback)
 
 $.on - Attach event listener to element(s)
   function(elements, eventName, callback, isCaptureBubbling)

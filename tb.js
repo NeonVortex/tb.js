@@ -123,7 +123,7 @@ $ = function(sel) {
    /** create ([parentElement,] elementType);
    ** Create a DOM element and append to parent element
    ** if element is not provided, it just creates an unattached element
-   ** fn is function(element) before appending
+   ** fn is function(element, parentElement) before appending
    ** return the new created element
    **/ 
   ns.create = function (parentElements, elementType, fn) {
@@ -133,7 +133,7 @@ $ = function(sel) {
     else {
       return map (parentElements, function (parentElement) {
         var element = document.createElement(elementType);
-        if (fn) { fn(element); }
+        fn && fn(element, parentElement;
         parentElement.appendChild(element);
         return element;
       }, true)
