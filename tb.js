@@ -93,6 +93,15 @@ $ = function() {
     };
   });
  
+  /** When DOM element is ready (IE9+)
+   ** ready(element=document, callback)
+   **/
+  ns.ready = function (el, fn) {
+    var en = "DOMContentLoaded";
+    (!fn) ?  ns.on (document, en, el): each(el, function(em) {ns.on (em, en, fn);}, true);
+  };
+
+
   var setFunctionMapping = {
     'attr': function(el,k,v) { return v ? el.setAttribute(k,v) : el.getAttribute(k);},
     'css' : function(el,k,v) { return v ? el.style[k] = v : el.style[k];},
@@ -111,17 +120,9 @@ $ = function() {
    **/
   ns.on = function(el, en, fn, cap) {
     (document.addEventListener) ? 
-      map(el, function (em) { em.addEventListener(en, fn, cap); }, true) :
-      map(el, function (em) { em.attachEvent("on"+en, fn); }, true);
+      each(el, function (em) { em.addEventListener(en, fn, cap); }, true) :
+      each(el, function (em) { em.attachEvent("on"+en, fn); }, true);
   };
-
-  /** When DOM element is ready (IE9+)
-   ** ready(element=document, callback)
-   **/
-  ns.ready = function (el, fn) {
-    var en = "DOMContentLoaded";
-    (!fn) ?  ns.on (document, en, el): ns.on (el, en, fn);
-  }
 
   /** Send AJAX request to server
    ** ajax(url, data, [usePost], successCallback, [errorCallback, progressCallback])
