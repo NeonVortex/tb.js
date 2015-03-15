@@ -127,26 +127,6 @@ $ = function(sel) {
   };
 
 
-   /** create ([parentElement,] elementType);
-   ** Create a DOM element and append to parent element
-   ** if element is not provided, it just creates an unattached element
-   ** fn is function(element, parentElement) before appending
-   ** return the new created element
-   **/ 
-  ns.create = function (parentElements, elementType, fn) {
-    if (!elementType) {
-      return document.createElement(parentElement);
-    }
-    else {
-      return map (parentElements, function (parentElement) {
-        var element = document.createElement(elementType);
-        fn && fn(element, parentElement;
-        parentElement.appendChild(element);
-        return element;
-      });
-    }
-  }
-
   /* Parse HTML or JSON */
   ns.parse = function (str, isJSON) {
     if(!isJSON) {
@@ -176,23 +156,29 @@ $ = function(sel) {
           function (parentElement, childElement) {
             /* Reversed order of children? */
             parentElement.insertBefore(childElement, parentElement.firstChild);
-          } : (typeof(insertMode) == "function" ?
+          } : (typeof(insertMode) =="function" ?
             insertMode :
             return;
             )
           )
       );
 
-    var parsedElements = childElements;
-    if (typeof(childElements) == "string" || (childElements.length && typeof(childElements[0]) == "string) {
-      parsedElements = map (childElements, ns.parse);
-    }
+    //Rewrite this part and delete create function
+    var parsedElements = (typeof(childElements) == "string" || (childElement.length && typeof(childElements[0] == "string"))) ?
+      map (childElements, ns.parse) : childElements;
+    var toClone = (parentElements.length > 1 && parsedElements.length == 1);
+    var toMap = (parentElements.length && (parentElements.length == parsedElements.length));
 
-    each (parentElements, function (parentElement) {
-      each (childElements, function (childElement) {
+    if (toMap) {
+      each (parentElements, function (parentElement, i) {
+        fn (parentElement, childElements[i]);
+      }
+    }
+    else if (toClone) {
+      each (parentElements, function (parentElement) {
         fn (parentElement, childElement.cloneNode(true));
-      });
-    });
+      }
+    }
   }
           
 
