@@ -63,6 +63,14 @@ reduce = function (cl, fn) {
   }
 }
 
+isDefined = function(o, fn) {
+  var result = typeof(o) != "undefined";
+  if (fn && result) {
+    fn (o);
+  }
+  return result; 
+};
+
 /* DOM Handling */
 /** $ is the namespace for all DOM operation functions
  ** itself is also a function using CSS Selector to query elements
