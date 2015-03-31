@@ -1,10 +1,14 @@
 /* Utilities */
 
-/** each (collection, callback, allowsingle)
- ** collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
+var _ = {};
+
+(function(ns){
+
+/** each (collection, callback)
+ ** collection can be single element, array, any list
  ** return undefined
  **/
-each = function (cl, fn) {
+ns.each = function (cl, fn) {
   if (Array.isArray(cl) || cl.length) {
     for (var i = 0; i < cl.length; i++) {
       (function (_el,_i) {
@@ -17,7 +21,7 @@ each = function (cl, fn) {
   }
 };
 
-eachPair = function (cl, fn) {
+ns.eachPair = function (cl, fn) {
   for (var k in cl) {
     (function(_k, _v) {
      fn(_k, _v);
@@ -26,11 +30,11 @@ eachPair = function (cl, fn) {
 };
 
 
-/** map (collection, callback, allowsingle)
+/** map (collection, callback)
  ** collection can be single element, array, any list
  ** return single element if collection is single element, array if collection is not single element
  **/
-map = function (cl, fn) {
+ns.map = function (cl, fn) {
   var result = [];
   if (Array.isArray(cl) || cl.length) {
     for (var i = 0; i < cl.length; i++) {
@@ -48,7 +52,7 @@ map = function (cl, fn) {
 /** reduce
  ** only work with single element and array; not hashmap
  **/
-reduce = function (cl, fn) {
+ns.reduce = function (cl, fn) {
   if (Array.isArray(cl) || cl.length) {
     var cur = cl[0];
     for(var i = 1; i < cl.length; i++) {
@@ -63,14 +67,46 @@ reduce = function (cl, fn) {
   }
 }
 
-/* DOM Handling */
-/** $ is the namespace for all DOM operation functions
+
+ns.isDefined = function(o, fn) {
+  var result = typeof(o) != "undefined";
+  if (fn && result) {
+    fn (o);
+  }
+  return result; 
+};
+
+ns.global = Function("return this;")();
+
+ns.ns = function (o) {
+  ns.eachPair(ns, function(k,v) {
+    o[k] = v;
+  });
+};
+
+})(_);
+
+/* Add utils to global namespace */
+_.isDefined(_.global, function(global) {
+  global._ = _;
+});
+/** tb is the namespace for all DOM operation functions
  ** itself is also a function using CSS Selector to query elements
+ ** $ is the alias of tb for convenience purpose
  ** return nodelist
  **/
-$ = function(sel) {
+tb = $ = function(sel) {
   return document.querySelectorAll(sel);
 };
+
+/* Must load tb-utils.
+ * Add util functions to global object */
+/* require("tb-utils.js") */
+_.ns(_.global);
+
+(function(ns){
+
+/* DOM Handling */
 
 /** Generate Stub-ed Functions in namespace
  **
@@ -86,7 +122,6 @@ $ = function(sel) {
  ** This utilizes getElementById function which is the fastest query function available
  ** return a node;
  **/
-(function(ns) {
 
   eachPair({
     'all':'querySelectorAll',
@@ -248,5 +283,5 @@ $ = function(sel) {
   };
     
 
-})($);
+})(tb);
 
