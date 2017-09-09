@@ -22,19 +22,19 @@ Features:
 Utilities
 all utility functions resides in global namespace as they are very commonly used and should considered built-in
 
-each - Apply callback on each element in the collection.
+- each - Apply callback on each element in the collection.
   function (collection, callback, [allowsingle])
   collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
   return undefined
 
 
-map - Map collection by callback function
+- map - Map collection by callback function
   function (collection, callback, [allowsingle])
   collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
   return single element if collection is single element, array if collection is not single element
 
 
-chain - Chain operations on the target
+- chain - Chain operations on the target
   function (target, function, ...)
 
 
@@ -44,9 +44,9 @@ $ is the namespace for all DOM operation functions
 $ itself is a function too. $(sel) is equivalent to $.all(document, sel);
 
 
-$.all - Get all matching elements (CSS Selector applies) (IE8+)
-  function ([element = document], selectorString) 
-  return a nodelist;
+    $.all - Get all matching elements (CSS Selector applies) (IE8+)
+      function ([element = document], selectorString) 
+      return a nodelist;
  
 $.one - Get first matching element (of all) (IE8+)
   function ([element = document], selectorString) 
