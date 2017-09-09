@@ -44,9 +44,9 @@ $ is the namespace for all DOM operation functions
 $ itself is a function too. $(sel) is equivalent to $.all(document, sel);
 
 
-    $.all - Get all matching elements (CSS Selector applies) (IE8+)
-      function ([element = document], selectorString) 
-      return a nodelist;
+- $.all - Get all matching elements (CSS Selector applies) (IE8+)
+  function ([element = document], selectorString) 
+  return a nodelist;
  
 $.one - Get first matching element (of all) (IE8+)
   function ([element = document], selectorString) 
