@@ -45,6 +45,7 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
 
 
 **$.all** - Get all matching elements (CSS Selector applies) (IE8+)
+
   function ([element = document], selectorString) 
   return a nodelist;
  
