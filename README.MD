@@ -11,11 +11,11 @@ Features:
 
   In jQuery you might have 
   
-  $('#body-container').css('color', 'black');
+      $('#body-container').css('color', 'black');
 
   Using tbjs, you will do
 
-  $.css($('#body-container), 'color', 'black');
+      $.css($('#body-container), 'color', 'black');
 
 
 
