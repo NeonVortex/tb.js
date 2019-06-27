@@ -23,19 +23,22 @@ Utilities
 all utility functions resides in global namespace as they are very commonly used and should considered built-in
 
 **each** - Apply callback on each element in the collection.
-  function (collection, callback, [allowsingle])
-  collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
+
+  `function (collection, callback, [allowsingle])`<br/>
+  collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)<br/>
   return undefined
 
 
 **map** - Map collection by callback function
-  function (collection, callback, [allowsingle])
-  collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)
+
+  `function (collection, callback, [allowsingle])`<br/>
+  collection can be single element (only if allowsingle is set to true), array, any list, or a hashmap (only if allowsingle is not set)<br/>
   return single element if collection is single element, array if collection is not single element
 
 
 **chain** - Chain operations on the target
-  function (target, function, ...)
+
+  `function (target, function, ...)`
 
 
 DOM Handling
@@ -46,17 +49,17 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
 
 **$.all** - Get all matching elements (CSS Selector applies) (IE8+)
 
-  `function ([element = document], selectorString)`
+  `function ([element = document], selectorString)`<br/>
   return a nodelist;
  
 **$.one** - Get first matching element (of all) (IE8+)
 
-  `function ([element = document], selectorString)`
+  `function ([element = document], selectorString)`<br/>
   return a node;
 
 **$.id** - Get element by ID
 
-  `function ([element = document], idWithoutPrefix#)` 
+  `function ([element = document], idWithoutPrefix#)` <br/>
   return a node;
  
 **$.ready** - Callback when DOM element(s) is/are ready (IE9+)
@@ -65,13 +68,13 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
 
 **$.on** - Attach event listener to element(s)
 
-  `function(elements, eventName, callback, isCaptureBubbling)`
+  `function(elements, eventName, callback, isCaptureBubbling)`<br/>
   isCaptureBubbling not working in IE
 
 
 **$.attr** - Get/Set attribute of element(s)
 
-  `function (elements, attributeName [, attributeValue]`
+  `function (elements, attributeName [, attributeValue]`<br/>
   return undefined if setting, attributeValue(s) if getting
 
 **$.css** - Get/Set css style of element(s)
@@ -80,12 +83,12 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
   
 **$.ajax** - Send AJAX request to server
 
-  `function (url, data, [usePost], successCallback, [errorCallback, progressCallback])`
-  *url* string
-  *data* string or object; if it is object, it should be as following:
-    {text: dataString, mimetype : mimetypestring, otherheader : otherheadervalue, ...}
-  *userPost [optional]* use "POST" if true, use "GET" if false or not given
-  *successCallback*: function (response, statusCode)
-  *errorCallback [optional]* function (response, statusCode)
+  `function (url, data, [usePost], successCallback, [errorCallback, progressCallback])`<br/>
+  *url* string<br/>
+  *data* string or object; if it is object, it should be as following:<br/>
+    {text: dataString, mimetype : mimetypestring, otherheader : otherheadervalue, ...}<br/>
+  *userPost [optional]* use "POST" if true, use "GET" if false or not given<br/>
+  *successCallback*: function (response, statusCode)<br/>
+  *errorCallback [optional]* function (response, statusCode)<br/>
   *progressCallback [optional]* function (response)
   
