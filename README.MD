@@ -46,27 +46,32 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
 
 **$.all** - Get all matching elements (CSS Selector applies) (IE8+)
 
-  function ([element = document], selectorString) 
+  `function ([element = document], selectorString)`
   return a nodelist;
  
 **$.one** - Get first matching element (of all) (IE8+)
-  function ([element = document], selectorString) 
+
+  `function ([element = document], selectorString)`
   return a node;
 
 **$.id** - Get element by ID
-  function ([element = document], idWithoutPrefix#) 
+
+  `function ([element = document], idWithoutPrefix#)` 
   return a node;
  
 **$.ready** - Callback when DOM element(s) is/are ready (IE9+)
-  function([elements = document], callback)
+
+  `function([elements = document], callback)`
 
 **$.on** - Attach event listener to element(s)
-  function(elements, eventName, callback, isCaptureBubbling)
+
+  `function(elements, eventName, callback, isCaptureBubbling)`
   isCaptureBubbling not working in IE
 
 
 **$.attr** - Get/Set attribute of element(s)
-  function (elements, attributeName [, attributeValue]
+
+  `function (elements, attributeName [, attributeValue]`
   return undefined if setting, attributeValue(s) if getting
 
 **$.css** - Get/Set css style of element(s)
@@ -74,12 +79,13 @@ $ itself is a function too. `$(sel)` is equivalent to `$.all(document, sel)`;
 **$.prop** - Get/Set property of element(s)
   
 **$.ajax** - Send AJAX request to server
-  function (url, data, [usePost], successCallback, [errorCallback, progressCallback])
-  url: string
-  data: string or object; if it is object, it should be as following:
+
+  `function (url, data, [usePost], successCallback, [errorCallback, progressCallback])`
+  *url* string
+  *data* string or object; if it is object, it should be as following:
     {text: dataString, mimetype : mimetypestring, otherheader : otherheadervalue, ...}
-  userPost [optional]: use "POST" if true, use "GET" if false or not given
-  successCallback: function (response, statusCode)
-  errorCallback [optional]: function (response, statusCode)
-  progressCallback [optional]: function (response)
+  *userPost [optional]* use "POST" if true, use "GET" if false or not given
+  *successCallback*: function (response, statusCode)
+  *errorCallback [optional]* function (response, statusCode)
+  *progressCallback [optional]* function (response)
   
